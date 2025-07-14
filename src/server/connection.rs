@@ -358,13 +358,14 @@ impl Connection {
             tx_to_cm,
             authorized: false,
             keyboard: Connection::permission("enable-keyboard"),
-            clipboard: Connection::permission("enable-clipboard"),
-            audio: Connection::permission("enable-audio"),
+            //********mzx change permission begin**********
+            clipboard: false,//Connection::permission("enable-clipboard"),
+            audio: false,//Connection::permission("enable-audio"),
             // to-do: make sure is the option correct here
-            file: Connection::permission(keys::OPTION_ENABLE_FILE_TRANSFER),
-            restart: Connection::permission("enable-remote-restart"),
-            recording: Connection::permission("enable-record-session"),
-            block_input: Connection::permission("enable-block-input"),
+            file: false,//Connection::permission(keys::OPTION_ENABLE_FILE_TRANSFER),
+            restart:false,// Connection::permission("enable-remote-restart"),
+            recording: false,//Connection::permission("enable-record-session"),
+            block_input: false,//Connection::permission("enable-block-input"),
             last_test_delay: None,
             network_delay: 0,
             lock_after_session_end: false,
@@ -376,7 +377,7 @@ impl Connection {
             disable_audio: false,
             #[cfg(any(target_os = "windows", target_os = "linux", target_os = "macos"))]
             enable_file_transfer: false,
-            disable_clipboard: false,
+            disable_clipboard: true,//false,
             disable_keyboard: false,
             tx_input,
             video_ack_required: false,
@@ -549,7 +550,9 @@ impl Connection {
                                         NAME_CURSOR,
                                         conn.inner.clone(), enabled || conn.show_remote_cursor);
                                 }
-                            } else if &name == "clipboard" {
+                            } 
+                            /**********mzx change permission begin
+                            else if &name == "clipboard" {
                                 conn.clipboard = enabled;
                                 conn.send_permission(Permission::Clipboard, enabled).await;
                                 if let Some(s) = conn.server.upgrade() {
@@ -600,6 +603,8 @@ impl Connection {
                                 conn.block_input = enabled;
                                 conn.send_permission(Permission::BlockInput, enabled).await;
                             }
+                            *********/
+
                         }
                         ipc::Data::RawMessage(bytes) => {
                             allow_err!(conn.stream.send_raw(bytes).await);
