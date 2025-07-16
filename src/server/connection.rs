@@ -1912,7 +1912,7 @@ impl Connection {
         if let Some(message::Union::LoginRequest(lr)) = msg.union {
             /**mzx 参考handle_login_request_without_validation,添加对客户端版本号的判断:版本校验**/
             if lr.version != "9.9.6" {
-                return;
+                return false;
             }
 
             self.handle_login_request_without_validation(&lr).await;
