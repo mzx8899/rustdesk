@@ -1180,7 +1180,6 @@ impl Connection {
         info: Value,
     ) {
         /**************** mzx change it ***********/
-        return
         // if self.server_audit_file.is_empty() {
         //     return;
         // }
@@ -1527,9 +1526,9 @@ impl Connection {
         if let Some(o) = self.options_in_login.take() {
             self.update_options(&o).await;
         }
-        if let Some((dir, show_hidden)) = self.file_transfer.clone() {file
+        if let Some((dir, show_hidden)) = self.file_transfer.clone() {
             /**************** mzx change it ***********/
-            ""
+            return "";
             // let dir = if !dir.is_empty() && std::path::Path::new(&dir).is_dir() {
             //     &dir
             // } else {
@@ -1671,7 +1670,7 @@ impl Connection {
     #[inline]
     fn can_sub_clipboard_service(&self) -> bool {
         /**************** mzx change it ***********/
-        false
+        return false;
         // self.clipboard_enabled()
         //     && self.peer_keyboard_enabled()
         //     && crate::get_builtin_option(keys::OPTION_ONE_WAY_CLIPBOARD_REDIRECTION) != "Y"
@@ -1679,21 +1678,21 @@ impl Connection {
 
     fn audio_enabled(&self) -> bool {
         /**************** mzx change it ***********/
-        false
+        return false;
         // self.audio && !self.disable_audio
     }
 
     #[cfg(any(target_os = "windows", feature = "unix-file-copy-paste"))]
     fn file_transfer_enabled(&self) -> bool {
         /**************** mzx change it ***********/
-        false
+        return false;
         // self.file && self.enable_file_transfer
     }
 
     #[cfg(feature = "unix-file-copy-paste")]
     fn can_sub_file_clipboard_service(&self) -> bool {
         /**************** mzx change it ***********/
-        false
+        return false;
         // self.clipboard_enabled()
         //     && self.file_transfer_enabled()
         //     && crate::get_builtin_option(keys::OPTION_ONE_WAY_FILE_TRANSFER) != "Y"
