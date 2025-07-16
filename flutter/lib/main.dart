@@ -71,33 +71,34 @@ Future<void> main(List<String> args) async {
           kAppTypeDesktopRemote,
         );
         break;
-      case WindowType.FileTransfer:
-        desktopType = DesktopType.fileTransfer;
-        runMultiWindow(
-          argument,
-          kAppTypeDesktopFileTransfer,
-        );
-        break;
-      case WindowType.ViewCamera:
-        desktopType = DesktopType.viewCamera;
-        runMultiWindow(
-          argument,
-          kAppTypeDesktopViewCamera,
-        );
-        break;
-      case WindowType.PortForward:
-        desktopType = DesktopType.portForward;
-        runMultiWindow(
-          argument,
-          kAppTypeDesktopPortForward,
-        );
-        break;
-      case WindowType.Terminal:
-        desktopType = DesktopType.terminal;
-        runMultiWindow(
-          argument,
-          kAppTypeDesktopTerminal,
-        );
+      /**************** mzx change it ***********/
+      // case WindowType.FileTransfer:
+      //   desktopType = DesktopType.fileTransfer;
+      //   runMultiWindow(
+      //     argument,
+      //     kAppTypeDesktopFileTransfer,
+      //   );
+      //   break;
+      // case WindowType.ViewCamera:
+      //   desktopType = DesktopType.viewCamera;
+      //   runMultiWindow(
+      //     argument,
+      //     kAppTypeDesktopViewCamera,
+      //   );
+      //   break;
+      // case WindowType.PortForward:
+      //   desktopType = DesktopType.portForward;
+      //   runMultiWindow(
+      //     argument,
+      //     kAppTypeDesktopPortForward,
+      //   );
+      //   break;
+      // case WindowType.Terminal:
+      //   desktopType = DesktopType.terminal;
+      //   runMultiWindow(
+      //     argument,
+      //     kAppTypeDesktopTerminal,
+      //   );
       default:
         break;
     }
@@ -202,27 +203,28 @@ void runMultiWindow(
         params: argument,
       );
       break;
-    case kAppTypeDesktopFileTransfer:
-      widget = DesktopFileTransferScreen(
-        params: argument,
-      );
-      break;
-    case kAppTypeDesktopViewCamera:
-      draggablePositions.load();
-      widget = DesktopViewCameraScreen(
-        params: argument,
-      );
-      break;
-    case kAppTypeDesktopPortForward:
-      widget = DesktopPortForwardScreen(
-        params: argument,
-      );
-      break;
-    case kAppTypeDesktopTerminal:
-      widget = DesktopTerminalScreen(
-        params: argument,
-      );
-      break;
+    /**************** mzx change it ***********/
+    // case kAppTypeDesktopFileTransfer:
+    //   widget = DesktopFileTransferScreen(
+    //     params: argument,
+    //   );
+    //   break;
+    // case kAppTypeDesktopViewCamera:
+    //   draggablePositions.load();
+    //   widget = DesktopViewCameraScreen(
+    //     params: argument,
+    //   );
+    //   break;
+    // case kAppTypeDesktopPortForward:
+    //   widget = DesktopPortForwardScreen(
+    //     params: argument,
+    //   );
+    //   break;
+    // case kAppTypeDesktopTerminal:
+    //   widget = DesktopTerminalScreen(
+    //     params: argument,
+    //   );
+    //   break;
     default:
       // no such appType
       exit(0);
