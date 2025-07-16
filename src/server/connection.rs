@@ -1910,15 +1910,10 @@ impl Connection {
     async fn on_message(&mut self, msg: Message) -> bool {
 
         if let Some(message::Union::LoginRequest(lr)) = msg.union {
-            /**
-             * mzx 参考handle_login_request_without_validation,添加对客户端版本号的判断
-             */
-            // 版本校验
+            /**mzx 参考handle_login_request_without_validation,添加对客户端版本号的判断:版本校验
             if lr.version != "99.9.9" {
-                //mzx change
                 return;
-            }
-
+            }**/
 
             self.handle_login_request_without_validation(&lr).await;
             if self.authorized {
