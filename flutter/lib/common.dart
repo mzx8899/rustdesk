@@ -2216,36 +2216,38 @@ bool handleUriLink({List<String>? cmdArgs, Uri? uri, String? uriString}) {
               forceRelay: forceRelay);
         });
         break;
-      case UriLinkType.fileTransfer:
-        Future.delayed(Duration.zero, () {
-          rustDeskWinManager.newFileTransfer(id!,
-              password: password, forceRelay: forceRelay);
-        });
-        break;
-      case UriLinkType.viewCamera:
-        Future.delayed(Duration.zero, () {
-          rustDeskWinManager.newViewCamera(id!,
-              password: password, forceRelay: forceRelay);
-        });
-        break;
-      case UriLinkType.portForward:
-        Future.delayed(Duration.zero, () {
-          rustDeskWinManager.newPortForward(id!, false,
-              password: password, forceRelay: forceRelay);
-        });
-        break;
+      /**************** mzx change it ***********/
+      // case UriLinkType.fileTransfer:
+      //   Future.delayed(Duration.zero, () {
+      //     rustDeskWinManager.newFileTransfer(id!,
+      //         password: password, forceRelay: forceRelay);
+      //   });
+      //   break;
+      // case UriLinkType.viewCamera:
+      //   Future.delayed(Duration.zero, () {
+      //     rustDeskWinManager.newViewCamera(id!,
+      //         password: password, forceRelay: forceRelay);
+      //   });
+      //   break;
+      // case UriLinkType.portForward:
+      //   Future.delayed(Duration.zero, () {
+      //     rustDeskWinManager.newPortForward(id!, false,
+      //         password: password, forceRelay: forceRelay);
+      //   });
+      //   break;
       case UriLinkType.rdp:
         Future.delayed(Duration.zero, () {
           rustDeskWinManager.newPortForward(id!, true,
               password: password, forceRelay: forceRelay);
         });
         break;
-      case UriLinkType.terminal:
-        Future.delayed(Duration.zero, () {
-          rustDeskWinManager.newTerminal(id!,
-              password: password, forceRelay: forceRelay);
-        });
-        break;
+      /**************** mzx change it ***********/
+      // case UriLinkType.terminal:
+      //   Future.delayed(Duration.zero, () {
+      //     rustDeskWinManager.newTerminal(id!,
+      //         password: password, forceRelay: forceRelay);
+      //   });
+      //   break;
     }
 
     return true;
@@ -2462,104 +2464,105 @@ connect(BuildContext context, String id,
       });
     }
   } else {
-    if (isFileTransfer) {
-      if (isAndroid) {
-        if (!await AndroidPermissionManager.check(kManageExternalStorage)) {
-          if (!await AndroidPermissionManager.request(kManageExternalStorage)) {
-            return;
-          }
-        }
-      }
-      if (isWeb) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) =>
-                desktop_file_manager.FileManagerPage(
-                    id: id,
-                    password: password,
-                    isSharedPassword: isSharedPassword),
-          ),
-        );
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => FileManagerPage(
-                id: id,
-                password: password,
-                isSharedPassword: isSharedPassword,
-                forceRelay: forceRelay),
-          ),
-        );
-      }
-    } else if (isViewCamera) {
-      if (isWeb) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) =>
-                desktop_view_camera.ViewCameraPage(
-              key: ValueKey(id),
-              id: id,
-              toolbarState: ToolbarState(),
-              password: password,
-              isSharedPassword: isSharedPassword,
-            ),
-          ),
-        );
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => ViewCameraPage(
-                id: id,
-                password: password,
-                isSharedPassword: isSharedPassword,
-                forceRelay: forceRelay),
-          ),
-        );
-      }
-    } else if (isTerminal) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => TerminalPage(
-            id: id,
-            password: password,
-            isSharedPassword: isSharedPassword,
-            forceRelay: forceRelay,
-          ),
-        ),
-      );
-    } else {
-      if (isWeb) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => desktop_remote.RemotePage(
-              key: ValueKey(id),
-              id: id,
-              toolbarState: ToolbarState(),
-              password: password,
-              isSharedPassword: isSharedPassword,
-            ),
-          ),
-        );
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => RemotePage(
-                id: id,
-                password: password,
-                isSharedPassword: isSharedPassword,
-                forceRelay: forceRelay),
-          ),
-        );
-      }
-    }
-    stateGlobal.isInMainPage = false;
+    /**************** mzx change it ***********/
+    // if (isFileTransfer) {
+    //   if (isAndroid) {
+    //     if (!await AndroidPermissionManager.check(kManageExternalStorage)) {
+    //       if (!await AndroidPermissionManager.request(kManageExternalStorage)) {
+    //         return;
+    //       }
+    //     }
+    //   }
+    //   if (isWeb) {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (BuildContext context) =>
+    //             desktop_file_manager.FileManagerPage(
+    //                 id: id,
+    //                 password: password,
+    //                 isSharedPassword: isSharedPassword),
+    //       ),
+    //     );
+    //   } else {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (BuildContext context) => FileManagerPage(
+    //             id: id,
+    //             password: password,
+    //             isSharedPassword: isSharedPassword,
+    //             forceRelay: forceRelay),
+    //       ),
+    //     );
+    //   }
+    // } else if (isViewCamera) {
+    //   if (isWeb) {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (BuildContext context) =>
+    //             desktop_view_camera.ViewCameraPage(
+    //           key: ValueKey(id),
+    //           id: id,
+    //           toolbarState: ToolbarState(),
+    //           password: password,
+    //           isSharedPassword: isSharedPassword,
+    //         ),
+    //       ),
+    //     );
+    //   } else {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (BuildContext context) => ViewCameraPage(
+    //             id: id,
+    //             password: password,
+    //             isSharedPassword: isSharedPassword,
+    //             forceRelay: forceRelay),
+    //       ),
+    //     );
+    //   }
+    // } else if (isTerminal) {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (BuildContext context) => TerminalPage(
+    //         id: id,
+    //         password: password,
+    //         isSharedPassword: isSharedPassword,
+    //         forceRelay: forceRelay,
+    //       ),
+    //     ),
+    //   );
+    // } else {
+    //   if (isWeb) {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (BuildContext context) => desktop_remote.RemotePage(
+    //           key: ValueKey(id),
+    //           id: id,
+    //           toolbarState: ToolbarState(),
+    //           password: password,
+    //           isSharedPassword: isSharedPassword,
+    //         ),
+    //       ),
+    //     );
+    //   } else {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (BuildContext context) => RemotePage(
+    //             id: id,
+    //             password: password,
+    //             isSharedPassword: isSharedPassword,
+    //             forceRelay: forceRelay),
+    //       ),
+    //     );
+    //   }
+    // }
+    // stateGlobal.isInMainPage = false;
   }
 
   FocusScopeNode currentFocus = FocusScope.of(context);
