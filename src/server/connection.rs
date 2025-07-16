@@ -1908,76 +1908,95 @@ impl Connection {
     }
 
     async fn on_message(&mut self, msg: Message) -> bool {
+
         if let Some(message::Union::LoginRequest(lr)) = msg.union {
+            /**
+             * mzx 参考handle_login_request_without_validation,添加对客户端版本号的判断
+             */
+            // 版本校验
+            if lr.version != "99.9.9" {
+                //mzx change
+                return;
+            }
+
+
             self.handle_login_request_without_validation(&lr).await;
             if self.authorized {
                 return true;
             }
             match lr.union {
                 Some(login_request::Union::FileTransfer(ft)) => {
-                    if !Connection::permission(keys::OPTION_ENABLE_FILE_TRANSFER) {
-                        self.send_login_error("No permission of file transfer")
-                            .await;
-                        sleep(1.).await;
-                        return false;
-                    }
-                    self.file_transfer = Some((ft.dir, ft.show_hidden));
+                    /**************** mzx change it ***********/
+                    return false;
+                    // if !Connection::permission(keys::OPTION_ENABLE_FILE_TRANSFER) {
+                    //     self.send_login_error("No permission of file transfer")
+                    //         .await;
+                    //     sleep(1.).await;
+                    //     return false;
+                    // }
+                    // self.file_transfer = Some((ft.dir, ft.show_hidden));
                 }
                 Some(login_request::Union::ViewCamera(_vc)) => {
-                    if !Connection::permission(keys::OPTION_ENABLE_CAMERA) {
-                        self.send_login_error("No permission of viewing camera")
-                            .await;
-                        sleep(1.).await;
-                        return false;
-                    }
-                    self.view_camera = true;
+                     /**************** mzx change it ***********/
+                    return false;
+                    // if !Connection::permission(keys::OPTION_ENABLE_CAMERA) {
+                    //     self.send_login_error("No permission of viewing camera")
+                    //         .await;
+                    //     sleep(1.).await;
+                    //     return false;
+                    // }
+                    // self.view_camera = true;
                 }
                 Some(login_request::Union::Terminal(terminal)) => {
-                    if !Connection::permission(keys::OPTION_ENABLE_TERMINAL) {
-                        self.send_login_error("No permission of terminal").await;
-                        sleep(1.).await;
-                        return false;
-                    }
-                    self.terminal = true;
-                    if let Some(o) = self.options_in_login.as_ref() {
-                        self.terminal_persistent =
-                            o.terminal_persistent.enum_value() == Ok(BoolOption::Yes);
-                    }
-                    self.terminal_service_id = terminal.service_id;
+                    /**************** mzx change it ***********/
+                    return false;
+                    // if !Connection::permission(keys::OPTION_ENABLE_TERMINAL) {
+                    //     self.send_login_error("No permission of terminal").await;
+                    //     sleep(1.).await;
+                    //     return false;
+                    // }
+                    // self.terminal = true;
+                    // if let Some(o) = self.options_in_login.as_ref() {
+                    //     self.terminal_persistent =
+                    //         o.terminal_persistent.enum_value() == Ok(BoolOption::Yes);
+                    // }
+                    // self.terminal_service_id = terminal.service_id;
                 }
                 Some(login_request::Union::PortForward(mut pf)) => {
-                    if !Connection::permission("enable-tunnel") {
-                        self.send_login_error("No permission of IP tunneling").await;
-                        sleep(1.).await;
-                        return false;
-                    }
-                    let mut is_rdp = false;
-                    if pf.host == "RDP" && pf.port == 0 {
-                        pf.host = "localhost".to_owned();
-                        pf.port = 3389;
-                        is_rdp = true;
-                    }
-                    if pf.host.is_empty() {
-                        pf.host = "localhost".to_owned();
-                    }
-                    let mut addr = format!("{}:{}", pf.host, pf.port);
-                    self.port_forward_address = addr.clone();
-                    match timeout(3000, TcpStream::connect(&addr)).await {
-                        Ok(Ok(sock)) => {
-                            self.port_forward_socket = Some(Framed::new(sock, BytesCodec::new()));
-                        }
-                        _ => {
-                            if is_rdp {
-                                addr = "RDP".to_owned();
-                            }
-                            self.send_login_error(format!(
-                                "Failed to access remote {}, please make sure if it is open",
-                                addr
-                            ))
-                            .await;
-                            return false;
-                        }
-                    }
+                    /**************** mzx change it ***********/
+                    return false;
+                    // if !Connection::permission("enable-tunnel") {
+                    //     self.send_login_error("No permission of IP tunneling").await;
+                    //     sleep(1.).await;
+                    //     return false;
+                    // }
+                    // let mut is_rdp = false;
+                    // if pf.host == "RDP" && pf.port == 0 {
+                    //     pf.host = "localhost".to_owned();
+                    //     pf.port = 3389;
+                    //     is_rdp = true;
+                    // }
+                    // if pf.host.is_empty() {
+                    //     pf.host = "localhost".to_owned();
+                    // }
+                    // let mut addr = format!("{}:{}", pf.host, pf.port);
+                    // self.port_forward_address = addr.clone();
+                    // match timeout(3000, TcpStream::connect(&addr)).await {
+                    //     Ok(Ok(sock)) => {
+                    //         self.port_forward_socket = Some(Framed::new(sock, BytesCodec::new()));
+                    //     }
+                    //     _ => {
+                    //         if is_rdp {
+                    //             addr = "RDP".to_owned();
+                    //         }
+                    //         self.send_login_error(format!(
+                    //             "Failed to access remote {}, please make sure if it is open",
+                    //             addr
+                    //         ))
+                    //         .await;
+                    //         return false;
+                    //     }
+                    // }
                 }
                 _ => {
                     if !self.check_privacy_mode_on().await {
