@@ -72,33 +72,33 @@ Future<void> main(List<String> args) async {
         );
         break;
       /**************** mzx change it ***********/
-      // case WindowType.FileTransfer:
-      //   desktopType = DesktopType.fileTransfer;
-      //   runMultiWindow(
-      //     argument,
-      //     kAppTypeDesktopFileTransfer,
-      //   );
-      //   break;
-      // case WindowType.ViewCamera:
-      //   desktopType = DesktopType.viewCamera;
-      //   runMultiWindow(
-      //     argument,
-      //     kAppTypeDesktopViewCamera,
-      //   );
-      //   break;
-      // case WindowType.PortForward:
-      //   desktopType = DesktopType.portForward;
-      //   runMultiWindow(
-      //     argument,
-      //     kAppTypeDesktopPortForward,
-      //   );
-      //   break;
-      // case WindowType.Terminal:
-      //   desktopType = DesktopType.terminal;
-      //   runMultiWindow(
-      //     argument,
-      //     kAppTypeDesktopTerminal,
-      //   );
+      case WindowType.FileTransfer:
+        desktopType = DesktopType.fileTransfer;
+        // runMultiWindow(
+        //   argument,
+        //   kAppTypeDesktopFileTransfer,
+        // );
+        break;
+      case WindowType.ViewCamera:
+        desktopType = DesktopType.viewCamera;
+        // runMultiWindow(
+        //   argument,
+        //   kAppTypeDesktopViewCamera,
+        // );
+        break;
+      case WindowType.PortForward:
+        desktopType = DesktopType.portForward;
+        // runMultiWindow(
+        //   argument,
+        //   kAppTypeDesktopPortForward,
+        // );
+        break;
+      case WindowType.Terminal:
+        desktopType = DesktopType.terminal;
+        // runMultiWindow(
+        //   argument,
+        //   kAppTypeDesktopTerminal,
+        // );
       default:
         break;
     }
