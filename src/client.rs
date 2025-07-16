@@ -2520,8 +2520,10 @@ impl LoginConfigHandler {
             my_platform,
             option: self.get_option_message(true).into(),
             session_id: self.session_id,
-            /****mzx change it****/
-            version: "99.9.9",//old:crate::VERSION.to_string(),
+            /****mzx change it
+            version: "99.9.9".to_string(),//old:
+	    ****/
+	    version:crate::VERSION.to_string(),
             os_login: Some(OSLogin {
                 username: os_username,
                 password: os_password,
