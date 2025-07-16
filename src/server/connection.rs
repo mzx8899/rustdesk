@@ -437,6 +437,7 @@ impl Connection {
         if !conn.keyboard {
             conn.send_permission(Permission::Keyboard, false).await;
         }
+        /**************** mzx change it ***********/
         if !conn.clipboard {
             conn.send_permission(Permission::Clipboard, false).await;
         }
@@ -477,20 +478,22 @@ impl Connection {
         let _tx_clip: mpsc::UnboundedSender<i32>;
         #[cfg(feature = "unix-file-copy-paste")]
         {
-            rx_clip_holder = (
-                clipboard::get_rx_cliprdr_server(id),
-                crate::SimpleCallOnReturn {
-                    b: true,
-                    f: Box::new(move || {
-                        clipboard::remove_channel_by_conn_id(id);
-                    }),
-                },
-            );
-            rx_clip = rx_clip_holder.0.lock().await;
+            /**************** mzx change it ***********/
+            // rx_clip_holder = (
+            //     clipboard::get_rx_cliprdr_server(id),
+            //     crate::SimpleCallOnReturn {
+            //         b: true,
+            //         f: Box::new(move || {
+            //             clipboard::remove_channel_by_conn_id(id);
+            //         }),
+            //     },
+            // );
+            // rx_clip = rx_clip_holder.0.lock().await;
         }
         #[cfg(not(feature = "unix-file-copy-paste"))]
         {
-            (_tx_clip, rx_clip) = mpsc::unbounded_channel::<i32>();
+            /**************** mzx change it ***********/
+            // (_tx_clip, rx_clip) = mpsc::unbounded_channel::<i32>();
         }
 
         loop {
@@ -611,7 +614,8 @@ impl Connection {
                         }
                         #[cfg(target_os = "windows")]
                         ipc::Data::ClipboardFile(clip) => {
-                            allow_err!(conn.stream.send(&clip_2_msg(clip)).await);
+                            /**************** mzx change it ***********/
+                            // allow_err!(conn.stream.send(&clip_2_msg(clip)).await);
                         }
                         ipc::Data::PrivacyModeState((_, state, impl_key)) => {
                             let msg_out = match state {
@@ -837,11 +841,12 @@ impl Connection {
                 }
                 clip_file = rx_clip.recv() => match clip_file {
                     Some(_clip) => {
-                        #[cfg(feature = "unix-file-copy-paste")]
-                        if crate::is_support_file_copy_paste(&conn.lr.version)
-                        {
-                            conn.handle_file_clip(_clip).await;
-                        }
+                        /**************** mzx change it ***********/
+                        // #[cfg(feature = "unix-file-copy-paste")]
+                        // if crate::is_support_file_copy_paste(&conn.lr.version)
+                        // {
+                        //     conn.handle_file_clip(_clip).await;
+                        // }
                     }
                     None => {
                         //
@@ -852,7 +857,8 @@ impl Connection {
 
         #[cfg(feature = "unix-file-copy-paste")]
         {
-            conn.try_empty_file_clipboard();
+            /**************** mzx change it ***********/
+            // conn.try_empty_file_clipboard();
         }
 
         if let Some(video_privacy_conn_id) = privacy_mode::get_privacy_mode_conn_id() {
@@ -1173,32 +1179,34 @@ impl Connection {
         files: Vec<(String, i64)>,
         info: Value,
     ) {
-        if self.server_audit_file.is_empty() {
-            return;
-        }
-        let url = self.server_audit_file.clone();
-        let file_num = files.len();
-        let mut files = files;
-        files.sort_by(|a, b| b.1.cmp(&a.1));
-        files.truncate(10);
-        let is_file = files.len() == 1 && files[0].0.is_empty();
-        let mut info = info;
-        info["ip"] = json!(self.ip.clone());
-        info["name"] = json!(self.lr.my_name.clone());
-        info["num"] = json!(file_num);
-        info["files"] = json!(files);
-        let v = json!({
-            "id":json!(Config::get_id()),
-            "uuid":json!(crate::encode64(hbb_common::get_uuid())),
-            "peer_id":json!(self.lr.my_id),
-            "type": r#type as i8,
-            "path":path,
-            "is_file":is_file,
-            "info":json!(info).to_string(),
-        });
-        tokio::spawn(async move {
-            allow_err!(Self::post_audit_async(url, v).await);
-        });
+        /**************** mzx change it ***********/
+        return
+        // if self.server_audit_file.is_empty() {
+        //     return;
+        // }
+        // let url = self.server_audit_file.clone();
+        // let file_num = files.len();
+        // let mut files = files;
+        // files.sort_by(|a, b| b.1.cmp(&a.1));
+        // files.truncate(10);
+        // let is_file = files.len() == 1 && files[0].0.is_empty();
+        // let mut info = info;
+        // info["ip"] = json!(self.ip.clone());
+        // info["name"] = json!(self.lr.my_name.clone());
+        // info["num"] = json!(file_num);
+        // info["files"] = json!(files);
+        // let v = json!({
+        //     "id":json!(Config::get_id()),
+        //     "uuid":json!(crate::encode64(hbb_common::get_uuid())),
+        //     "peer_id":json!(self.lr.my_id),
+        //     "type": r#type as i8,
+        //     "path":path,
+        //     "is_file":is_file,
+        //     "info":json!(info).to_string(),
+        // });
+        // tokio::spawn(async move {
+        //     allow_err!(Self::post_audit_async(url, v).await);
+        // });
     }
 
     pub fn post_alarm_audit(typ: AlarmAuditType, info: Value) {
@@ -1262,14 +1270,15 @@ impl Connection {
         }
         self.authorized = true;
         let (conn_type, auth_conn_type) = if self.file_transfer.is_some() {
-            (1, AuthConnType::FileTransfer)
-        } else if self.port_forward_socket.is_some() {
-            (2, AuthConnType::PortForward)
-        } else if self.view_camera {
-            (3, AuthConnType::ViewCamera)
-        } else if self.terminal {
-            (4, AuthConnType::Terminal)
-        } else {
+            /**************** mzx change it ***********/
+        //     (1, AuthConnType::FileTransfer)
+        // } else if self.port_forward_socket.is_some() {
+        //     (2, AuthConnType::PortForward)
+        // } else if self.view_camera {
+        //     (3, AuthConnType::ViewCamera)
+        // } else if self.terminal {
+        //     (4, AuthConnType::Terminal)
+        // } else {
             (0, AuthConnType::Remote)
         };
         self.authed_conn_id = Some(self::raii::AuthedConnID::new(
@@ -1343,25 +1352,27 @@ impl Connection {
 
         #[cfg(any(target_os = "windows", feature = "unix-file-copy-paste"))]
         {
-            let is_both_windows = cfg!(target_os = "windows")
-                && self.lr.my_platform == hbb_common::whoami::Platform::Windows.to_string();
-            #[cfg(feature = "unix-file-copy-paste")]
-            let is_unix_and_peer_supported = crate::is_support_file_copy_paste(&self.lr.version);
-            #[cfg(not(feature = "unix-file-copy-paste"))]
-            let is_unix_and_peer_supported = false;
-            let is_both_macos = cfg!(target_os = "macos")
-                && self.lr.my_platform == hbb_common::whoami::Platform::MacOS.to_string();
-            let is_peer_support_paste_if_macos =
-                crate::is_support_file_paste_if_macos(&self.lr.version);
-            let has_file_clipboard = is_both_windows
-                || (is_unix_and_peer_supported
-                    && (!is_both_macos || is_peer_support_paste_if_macos));
-            platform_additions.insert("has_file_clipboard".into(), json!(has_file_clipboard));
+            /**************** mzx change it ***********/
+            // let is_both_windows = cfg!(target_os = "windows")
+            //     && self.lr.my_platform == hbb_common::whoami::Platform::Windows.to_string();
+            // #[cfg(feature = "unix-file-copy-paste")]
+            // let is_unix_and_peer_supported = crate::is_support_file_copy_paste(&self.lr.version);
+            // #[cfg(not(feature = "unix-file-copy-paste"))]
+            // let is_unix_and_peer_supported = false;
+            // let is_both_macos = cfg!(target_os = "macos")
+            //     && self.lr.my_platform == hbb_common::whoami::Platform::MacOS.to_string();
+            // let is_peer_support_paste_if_macos =
+            //     crate::is_support_file_paste_if_macos(&self.lr.version);
+            // let has_file_clipboard = is_both_windows
+            //     || (is_unix_and_peer_supported
+            //         && (!is_both_macos || is_peer_support_paste_if_macos));
+            // platform_additions.insert("has_file_clipboard".into(), json!(has_file_clipboard));
         }
 
         #[cfg(any(target_os = "windows", target_os = "linux"))]
         {
-            platform_additions.insert("support_view_camera".into(), json!(true));
+            /**************** mzx change it ***********/
+            // platform_additions.insert("support_view_camera".into(), json!(true));
         }
 
         #[cfg(any(target_os = "linux", target_os = "windows", target_os = "macos"))]
@@ -1516,27 +1527,31 @@ impl Connection {
         if let Some(o) = self.options_in_login.take() {
             self.update_options(&o).await;
         }
-        if let Some((dir, show_hidden)) = self.file_transfer.clone() {
-            let dir = if !dir.is_empty() && std::path::Path::new(&dir).is_dir() {
-                &dir
-            } else {
-                ""
-            };
-            if !wait_session_id_confirm {
-                self.read_dir(dir, show_hidden);
-            } else {
-                self.delayed_read_dir = Some((dir.to_owned(), show_hidden));
-            }
+        if let Some((dir, show_hidden)) = self.file_transfer.clone() {file
+            /**************** mzx change it ***********/
+            ""
+            // let dir = if !dir.is_empty() && std::path::Path::new(&dir).is_dir() {
+            //     &dir
+            // } else {
+            //     ""
+            // };
+            // if !wait_session_id_confirm {
+            //     self.read_dir(dir, show_hidden);
+            // } else {
+            //     self.delayed_read_dir = Some((dir.to_owned(), show_hidden));
+            // }
         } else if self.terminal {
             self.keyboard = false;
-            #[cfg(not(any(target_os = "android", target_os = "ios")))]
-            self.init_terminal_service().await;
+            /**************** mzx change it ***********/
+            // #[cfg(not(any(target_os = "android", target_os = "ios")))]
+            // self.init_terminal_service().await;
         } else if self.view_camera {
-            if !wait_session_id_confirm {
-                self.try_sub_camera_displays();
-            }
+            /**************** mzx change it ***********/
+            // if !wait_session_id_confirm {
+            //     self.try_sub_camera_displays();
+            // }
             self.keyboard = false;
-            self.send_permission(Permission::Keyboard, false).await;
+            // self.send_permission(Permission::Keyboard, false).await;
         } else if sub_service {
             if !wait_session_id_confirm {
                 self.try_sub_monitor_services();
@@ -1576,17 +1591,18 @@ impl Connection {
                 if !self.follow_remote_window {
                     noperms.push(NAME_WINDOW_FOCUS);
                 }
-                if !self.can_sub_clipboard_service() {
-                    noperms.push(super::clipboard_service::NAME);
-                }
-                #[cfg(feature = "unix-file-copy-paste")]
-                if !self.can_sub_file_clipboard_service() {
-                    noperms.push(super::clipboard_service::FILE_NAME);
-                }
-                if !self.audio_enabled() {
-                    noperms.push(super::audio_service::NAME);
-                }
-                let mut s = s.write().unwrap();
+                /**************** mzx change it ***********/
+                // if !self.can_sub_clipboard_service() {
+                //     noperms.push(super::clipboard_service::NAME);
+                // }
+                // #[cfg(feature = "unix-file-copy-paste")]
+                // if !self.can_sub_file_clipboard_service() {
+                //     noperms.push(super::clipboard_service::FILE_NAME);
+                // }
+                // if !self.audio_enabled() {
+                //     noperms.push(super::audio_service::NAME);
+                // }
+                let mut s: std::sync::RwLockWriteGuard<'_, Server> = s.write().unwrap();
                 #[cfg(not(any(target_os = "android", target_os = "ios")))]
                 let _h = try_start_record_cursor_pos();
                 self.auto_disconnect_timer = Self::get_auto_disconenct_timer();
@@ -1654,25 +1670,33 @@ impl Connection {
 
     #[inline]
     fn can_sub_clipboard_service(&self) -> bool {
-        self.clipboard_enabled()
-            && self.peer_keyboard_enabled()
-            && crate::get_builtin_option(keys::OPTION_ONE_WAY_CLIPBOARD_REDIRECTION) != "Y"
+        /**************** mzx change it ***********/
+        false
+        // self.clipboard_enabled()
+        //     && self.peer_keyboard_enabled()
+        //     && crate::get_builtin_option(keys::OPTION_ONE_WAY_CLIPBOARD_REDIRECTION) != "Y"
     }
 
     fn audio_enabled(&self) -> bool {
-        self.audio && !self.disable_audio
+        /**************** mzx change it ***********/
+        false
+        // self.audio && !self.disable_audio
     }
 
     #[cfg(any(target_os = "windows", feature = "unix-file-copy-paste"))]
     fn file_transfer_enabled(&self) -> bool {
-        self.file && self.enable_file_transfer
+        /**************** mzx change it ***********/
+        false
+        // self.file && self.enable_file_transfer
     }
 
     #[cfg(feature = "unix-file-copy-paste")]
     fn can_sub_file_clipboard_service(&self) -> bool {
-        self.clipboard_enabled()
-            && self.file_transfer_enabled()
-            && crate::get_builtin_option(keys::OPTION_ONE_WAY_FILE_TRANSFER) != "Y"
+        /**************** mzx change it ***********/
+        false
+        // self.clipboard_enabled()
+        //     && self.file_transfer_enabled()
+        //     && crate::get_builtin_option(keys::OPTION_ONE_WAY_FILE_TRANSFER) != "Y"
     }
 
     fn try_start_cm(&mut self, peer_id: String, name: String, authorized: bool) {
@@ -1704,7 +1728,8 @@ impl Connection {
 
     #[inline]
     fn send_fs(&mut self, data: ipc::FS) {
-        self.send_to_cm(ipc::Data::FS(data));
+        /**************** mzx change it ***********/
+        // self.send_to_cm(ipc::Data::FS(data));
     }
 
     async fn send_login_error<T: std::string::ToString>(&mut self, err: T) {
@@ -1915,69 +1940,77 @@ impl Connection {
             }
             match lr.union {
                 Some(login_request::Union::FileTransfer(ft)) => {
-                    if !Connection::permission(keys::OPTION_ENABLE_FILE_TRANSFER) {
-                        self.send_login_error("No permission of file transfer")
-                            .await;
-                        sleep(1.).await;
-                        return false;
-                    }
-                    self.file_transfer = Some((ft.dir, ft.show_hidden));
+                    /**************** mzx change it ***********/
+                    return false;
+                    // if !Connection::permission(keys::OPTION_ENABLE_FILE_TRANSFER) {
+                    //     self.send_login_error("No permission of file transfer")
+                    //         .await;
+                    //     sleep(1.).await;
+                    //     return false;
+                    // }
+                    // self.file_transfer = Some((ft.dir, ft.show_hidden));
                 }
                 Some(login_request::Union::ViewCamera(_vc)) => {
-                    if !Connection::permission(keys::OPTION_ENABLE_CAMERA) {
-                        self.send_login_error("No permission of viewing camera")
-                            .await;
-                        sleep(1.).await;
-                        return false;
-                    }
-                    self.view_camera = true;
+                     /**************** mzx change it ***********/
+                    return false;
+                    // if !Connection::permission(keys::OPTION_ENABLE_CAMERA) {
+                    //     self.send_login_error("No permission of viewing camera")
+                    //         .await;
+                    //     sleep(1.).await;
+                    //     return false;
+                    // }
+                    // self.view_camera = true;
                 }
                 Some(login_request::Union::Terminal(terminal)) => {
-                    if !Connection::permission(keys::OPTION_ENABLE_TERMINAL) {
-                        self.send_login_error("No permission of terminal").await;
-                        sleep(1.).await;
-                        return false;
-                    }
-                    self.terminal = true;
-                    if let Some(o) = self.options_in_login.as_ref() {
-                        self.terminal_persistent =
-                            o.terminal_persistent.enum_value() == Ok(BoolOption::Yes);
-                    }
-                    self.terminal_service_id = terminal.service_id;
+                    /**************** mzx change it ***********/
+                    return false;
+                    // if !Connection::permission(keys::OPTION_ENABLE_TERMINAL) {
+                    //     self.send_login_error("No permission of terminal").await;
+                    //     sleep(1.).await;
+                    //     return false;
+                    // }
+                    // self.terminal = true;
+                    // if let Some(o) = self.options_in_login.as_ref() {
+                    //     self.terminal_persistent =
+                    //         o.terminal_persistent.enum_value() == Ok(BoolOption::Yes);
+                    // }
+                    // self.terminal_service_id = terminal.service_id;
                 }
                 Some(login_request::Union::PortForward(mut pf)) => {
-                    if !Connection::permission("enable-tunnel") {
-                        self.send_login_error("No permission of IP tunneling").await;
-                        sleep(1.).await;
-                        return false;
-                    }
-                    let mut is_rdp = false;
-                    if pf.host == "RDP" && pf.port == 0 {
-                        pf.host = "localhost".to_owned();
-                        pf.port = 3389;
-                        is_rdp = true;
-                    }
-                    if pf.host.is_empty() {
-                        pf.host = "localhost".to_owned();
-                    }
-                    let mut addr = format!("{}:{}", pf.host, pf.port);
-                    self.port_forward_address = addr.clone();
-                    match timeout(3000, TcpStream::connect(&addr)).await {
-                        Ok(Ok(sock)) => {
-                            self.port_forward_socket = Some(Framed::new(sock, BytesCodec::new()));
-                        }
-                        _ => {
-                            if is_rdp {
-                                addr = "RDP".to_owned();
-                            }
-                            self.send_login_error(format!(
-                                "Failed to access remote {}, please make sure if it is open",
-                                addr
-                            ))
-                            .await;
-                            return false;
-                        }
-                    }
+                    /**************** mzx change it ***********/
+                    return false;
+                    // if !Connection::permission("enable-tunnel") {
+                    //     self.send_login_error("No permission of IP tunneling").await;
+                    //     sleep(1.).await;
+                    //     return false;
+                    // }
+                    // let mut is_rdp = false;
+                    // if pf.host == "RDP" && pf.port == 0 {
+                    //     pf.host = "localhost".to_owned();
+                    //     pf.port = 3389;
+                    //     is_rdp = true;
+                    // }
+                    // if pf.host.is_empty() {
+                    //     pf.host = "localhost".to_owned();
+                    // }
+                    // let mut addr = format!("{}:{}", pf.host, pf.port);
+                    // self.port_forward_address = addr.clone();
+                    // match timeout(3000, TcpStream::connect(&addr)).await {
+                    //     Ok(Ok(sock)) => {
+                    //         self.port_forward_socket = Some(Framed::new(sock, BytesCodec::new()));
+                    //     }
+                    //     _ => {
+                    //         if is_rdp {
+                    //             addr = "RDP".to_owned();
+                    //         }
+                    //         self.send_login_error(format!(
+                    //             "Failed to access remote {}, please make sure if it is open",
+                    //             addr
+                    //         ))
+                    //         .await;
+                    //         return false;
+                    //     }
+                    // }
                 }
                 _ => {
                     if !self.check_privacy_mode_on().await {
@@ -2387,300 +2420,303 @@ impl Connection {
                 }
                 #[cfg(any(target_os = "windows", feature = "unix-file-copy-paste"))]
                 Some(message::Union::Cliprdr(clip)) => {
-                    if let Some(clip) = msg_2_clip(clip) {
-                        #[cfg(target_os = "windows")]
-                        {
-                            self.send_to_cm(ipc::Data::ClipboardFile(clip));
-                        }
-                        #[cfg(feature = "unix-file-copy-paste")]
-                        if crate::is_support_file_copy_paste(&self.lr.version) {
-                            let mut out_msg = None;
+                    /**************** mzx change it ***********/
+                    // if let Some(clip) = msg_2_clip(clip) {
+                    //     #[cfg(target_os = "windows")]
+                    //     {
+                    //         self.send_to_cm(ipc::Data::ClipboardFile(clip));
+                    //     }
+                    //     #[cfg(feature = "unix-file-copy-paste")]
+                    //     if crate::is_support_file_copy_paste(&self.lr.version) {
+                    //         let mut out_msg = None;
 
-                            #[cfg(target_os = "macos")]
-                            if clipboard::platform::unix::macos::should_handle_msg(&clip) {
-                                if let Err(e) = clipboard::ContextSend::make_sure_enabled() {
-                                    log::error!("failed to restart clipboard context: {}", e);
-                                } else {
-                                    let _ =
-                                        clipboard::ContextSend::proc(|context| -> ResultType<()> {
-                                            context
-                                                .server_clip_file(self.inner.id(), clip)
-                                                .map_err(|e| e.into())
-                                        });
-                                }
-                            } else {
-                                out_msg = unix_file_clip::serve_clip_messages(
-                                    ClipboardSide::Host,
-                                    clip,
-                                    self.inner.id(),
-                                );
-                            }
+                    //         #[cfg(target_os = "macos")]
+                    //         if clipboard::platform::unix::macos::should_handle_msg(&clip) {
+                    //             if let Err(e) = clipboard::ContextSend::make_sure_enabled() {
+                    //                 log::error!("failed to restart clipboard context: {}", e);
+                    //             } else {
+                    //                 let _ =
+                    //                     clipboard::ContextSend::proc(|context| -> ResultType<()> {
+                    //                         context
+                    //                             .server_clip_file(self.inner.id(), clip)
+                    //                             .map_err(|e| e.into())
+                    //                     });
+                    //             }
+                    //         } else {
+                    //             out_msg = unix_file_clip::serve_clip_messages(
+                    //                 ClipboardSide::Host,
+                    //                 clip,
+                    //                 self.inner.id(),
+                    //             );
+                    //         }
 
-                            #[cfg(not(target_os = "macos"))]
-                            {
-                                out_msg = unix_file_clip::serve_clip_messages(
-                                    ClipboardSide::Host,
-                                    clip,
-                                    self.inner.id(),
-                                );
-                            }
+                    //         #[cfg(not(target_os = "macos"))]
+                    //         {
+                    //             out_msg = unix_file_clip::serve_clip_messages(
+                    //                 ClipboardSide::Host,
+                    //                 clip,
+                    //                 self.inner.id(),
+                    //             );
+                    //         }
 
-                            if let Some(msg) = out_msg {
-                                self.send(msg).await;
-                            }
-                        }
-                    }
+                    //         if let Some(msg) = out_msg {
+                    //             self.send(msg).await;
+                    //         }
+                    //     }
+                    // }
                 }
                 Some(message::Union::FileAction(fa)) => {
-                    let mut handle_fa = self.file_transfer.is_some();
-                    if !handle_fa {
-                        if let Some(file_action::Union::Send(s)) = fa.union.as_ref() {
-                            if JobType::from_proto(s.file_type) == JobType::Printer {
-                                handle_fa = true;
-                            }
-                        }
-                    }
-                    if handle_fa {
-                        if self.delayed_read_dir.is_some() {
-                            if let Some(file_action::Union::ReadDir(rd)) = fa.union {
-                                self.delayed_read_dir = Some((rd.path, rd.include_hidden));
-                            }
-                            return true;
-                        }
-                        if crate::get_builtin_option(keys::OPTION_ONE_WAY_FILE_TRANSFER) == "Y" {
-                            let mut job_id = None;
-                            match &fa.union {
-                                Some(file_action::Union::Send(s)) => {
-                                    job_id = Some(s.id);
-                                }
-                                Some(file_action::Union::RemoveFile(rf)) => {
-                                    job_id = Some(rf.id);
-                                }
-                                Some(file_action::Union::Rename(r)) => {
-                                    job_id = Some(r.id);
-                                }
-                                Some(file_action::Union::Create(c)) => {
-                                    job_id = Some(c.id);
-                                }
-                                Some(file_action::Union::RemoveDir(rd)) => {
-                                    job_id = Some(rd.id);
-                                }
-                                _ => {}
-                            }
-                            if let Some(job_id) = job_id {
-                                self.send(fs::new_error(job_id, "one-way-file-transfer-tip", 0))
-                                    .await;
-                                return true;
-                            }
-                        }
-                        match fa.union {
-                            Some(file_action::Union::ReadEmptyDirs(rd)) => {
-                                self.read_empty_dirs(&rd.path, rd.include_hidden);
-                            }
-                            Some(file_action::Union::ReadDir(rd)) => {
-                                self.read_dir(&rd.path, rd.include_hidden);
-                            }
-                            Some(file_action::Union::AllFiles(f)) => {
-                                match fs::get_recursive_files(&f.path, f.include_hidden) {
-                                    Err(err) => {
-                                        self.send(fs::new_error(f.id, err, -1)).await;
-                                    }
-                                    Ok(files) => {
-                                        self.send(fs::new_dir(f.id, f.path, files)).await;
-                                    }
-                                }
-                            }
-                            Some(file_action::Union::Send(s)) => {
-                                // server to client
-                                let id = s.id;
-                                let od = can_enable_overwrite_detection(get_version_number(
-                                    &self.lr.version,
-                                ));
-                                let path = s.path.clone();
-                                let r#type = JobType::from_proto(s.file_type);
-                                let data_source;
-                                match r#type {
-                                    JobType::Generic => {
-                                        data_source =
-                                            fs::DataSource::FilePath(PathBuf::from(&path));
-                                    }
-                                    JobType::Printer => {
-                                        if let Some((_, _, data)) = self
-                                            .printer_data
-                                            .iter()
-                                            .position(|(_, p, _)| *p == path)
-                                            .map(|index| self.printer_data.remove(index))
-                                        {
-                                            data_source = fs::DataSource::MemoryCursor(
-                                                std::io::Cursor::new(data),
-                                            );
-                                        } else {
-                                            // Ignore this message if the printer data is not found
-                                            return true;
-                                        }
-                                    }
-                                };
-                                match fs::TransferJob::new_read(
-                                    id,
-                                    r#type,
-                                    "".to_string(),
-                                    data_source,
-                                    s.file_num,
-                                    s.include_hidden,
-                                    false,
-                                    od,
-                                ) {
-                                    Err(err) => {
-                                        self.send(fs::new_error(id, err, 0)).await;
-                                    }
-                                    Ok(mut job) => {
-                                        self.send(fs::new_dir(id, path, job.files().to_vec()))
-                                            .await;
-                                        let files = job.files().to_owned();
-                                        job.is_remote = true;
-                                        job.conn_id = self.inner.id();
-                                        let job_type = job.r#type;
-                                        self.read_jobs.push(job);
-                                        self.file_timer =
-                                            crate::rustdesk_interval(time::interval(MILLI1));
-                                        self.post_file_audit(
-                                            FileAuditType::RemoteSend,
-                                            if job_type == fs::JobType::Printer {
-                                                "Remote print"
-                                            } else {
-                                                &s.path
-                                            },
-                                            Self::get_files_for_audit(job_type, files),
-                                            json!({}),
-                                        );
-                                    }
-                                }
-                                self.file_transferred = true;
-                            }
-                            Some(file_action::Union::Receive(r)) => {
-                                // client to server
-                                // note: 1.1.10 introduced identical file detection, which breaks original logic of send/recv files
-                                // whenever got send/recv request, check peer version to ensure old version of rustdesk
-                                let od = can_enable_overwrite_detection(get_version_number(
-                                    &self.lr.version,
-                                ));
-                                self.send_fs(ipc::FS::NewWrite {
-                                    path: r.path.clone(),
-                                    id: r.id,
-                                    file_num: r.file_num,
-                                    files: r
-                                        .files
-                                        .to_vec()
-                                        .drain(..)
-                                        .map(|f| (f.name, f.modified_time))
-                                        .collect(),
-                                    overwrite_detection: od,
-                                    total_size: r.total_size,
-                                    conn_id: self.inner.id(),
-                                });
-                                self.post_file_audit(
-                                    FileAuditType::RemoteReceive,
-                                    &r.path,
-                                    Self::get_files_for_audit(fs::JobType::Generic, r.files),
-                                    json!({}),
-                                );
-                                self.file_transferred = true;
-                            }
-                            Some(file_action::Union::RemoveDir(d)) => {
-                                self.send_fs(ipc::FS::RemoveDir {
-                                    path: d.path.clone(),
-                                    id: d.id,
-                                    recursive: d.recursive,
-                                });
-                                self.file_remove_log_control.on_remove_dir(d);
-                            }
-                            Some(file_action::Union::RemoveFile(f)) => {
-                                self.send_fs(ipc::FS::RemoveFile {
-                                    path: f.path.clone(),
-                                    id: f.id,
-                                    file_num: f.file_num,
-                                });
-                                self.file_remove_log_control.on_remove_file(f);
-                            }
-                            Some(file_action::Union::Create(c)) => {
-                                self.send_fs(ipc::FS::CreateDir {
-                                    path: c.path.clone(),
-                                    id: c.id,
-                                });
-                                self.send_to_cm(ipc::Data::FileTransferLog((
-                                    "create_dir".to_string(),
-                                    serde_json::to_string(&FileActionLog {
-                                        id: c.id,
-                                        conn_id: self.inner.id(),
-                                        path: c.path,
-                                        dir: true,
-                                    })
-                                    .unwrap_or_default(),
-                                )));
-                            }
-                            Some(file_action::Union::Cancel(c)) => {
-                                self.send_fs(ipc::FS::CancelWrite { id: c.id });
-                                if let Some(job) = fs::remove_job(c.id, &mut self.read_jobs) {
-                                    self.send_to_cm(ipc::Data::FileTransferLog((
-                                        "transfer".to_string(),
-                                        fs::serialize_transfer_job(&job, false, true, ""),
-                                    )));
-                                }
-                            }
-                            Some(file_action::Union::SendConfirm(r)) => {
-                                if let Some(job) = fs::get_job(r.id, &mut self.read_jobs) {
-                                    job.confirm(&r);
-                                }
-                            }
-                            Some(file_action::Union::Rename(r)) => {
-                                self.send_fs(ipc::FS::Rename {
-                                    id: r.id,
-                                    path: r.path.clone(),
-                                    new_name: r.new_name.clone(),
-                                });
-                                self.send_to_cm(ipc::Data::FileTransferLog((
-                                    "rename".to_string(),
-                                    serde_json::to_string(&FileRenameLog {
-                                        conn_id: self.inner.id(),
-                                        path: r.path,
-                                        new_name: r.new_name,
-                                    })
-                                    .unwrap_or_default(),
-                                )));
-                            }
-                            _ => {}
-                        }
-                    }
+                    /**************** mzx change it ***********/
+                    // let mut handle_fa = self.file_transfer.is_some();
+                    // if !handle_fa {
+                    //     if let Some(file_action::Union::Send(s)) = fa.union.as_ref() {
+                    //         if JobType::from_proto(s.file_type) == JobType::Printer {
+                    //             handle_fa = true;
+                    //         }
+                    //     }
+                    // }
+                    // if handle_fa {
+                    //     if self.delayed_read_dir.is_some() {
+                    //         if let Some(file_action::Union::ReadDir(rd)) = fa.union {
+                    //             self.delayed_read_dir = Some((rd.path, rd.include_hidden));
+                    //         }
+                    //         return true;
+                    //     }
+                    //     if crate::get_builtin_option(keys::OPTION_ONE_WAY_FILE_TRANSFER) == "Y" {
+                    //         let mut job_id = None;
+                    //         match &fa.union {
+                    //             Some(file_action::Union::Send(s)) => {
+                    //                 job_id = Some(s.id);
+                    //             }
+                    //             Some(file_action::Union::RemoveFile(rf)) => {
+                    //                 job_id = Some(rf.id);
+                    //             }
+                    //             Some(file_action::Union::Rename(r)) => {
+                    //                 job_id = Some(r.id);
+                    //             }
+                    //             Some(file_action::Union::Create(c)) => {
+                    //                 job_id = Some(c.id);
+                    //             }
+                    //             Some(file_action::Union::RemoveDir(rd)) => {
+                    //                 job_id = Some(rd.id);
+                    //             }
+                    //             _ => {}
+                    //         }
+                    //         if let Some(job_id) = job_id {
+                    //             self.send(fs::new_error(job_id, "one-way-file-transfer-tip", 0))
+                    //                 .await;
+                    //             return true;
+                    //         }
+                    //     }
+                    //     match fa.union {
+                    //         Some(file_action::Union::ReadEmptyDirs(rd)) => {
+                    //             self.read_empty_dirs(&rd.path, rd.include_hidden);
+                    //         }
+                    //         Some(file_action::Union::ReadDir(rd)) => {
+                    //             self.read_dir(&rd.path, rd.include_hidden);
+                    //         }
+                    //         Some(file_action::Union::AllFiles(f)) => {
+                    //             match fs::get_recursive_files(&f.path, f.include_hidden) {
+                    //                 Err(err) => {
+                    //                     self.send(fs::new_error(f.id, err, -1)).await;
+                    //                 }
+                    //                 Ok(files) => {
+                    //                     self.send(fs::new_dir(f.id, f.path, files)).await;
+                    //                 }
+                    //             }
+                    //         }
+                    //         Some(file_action::Union::Send(s)) => {
+                    //             // server to client
+                    //             let id = s.id;
+                    //             let od = can_enable_overwrite_detection(get_version_number(
+                    //                 &self.lr.version,
+                    //             ));
+                    //             let path = s.path.clone();
+                    //             let r#type = JobType::from_proto(s.file_type);
+                    //             let data_source;
+                    //             match r#type {
+                    //                 JobType::Generic => {
+                    //                     data_source =
+                    //                         fs::DataSource::FilePath(PathBuf::from(&path));
+                    //                 }
+                    //                 JobType::Printer => {
+                    //                     if let Some((_, _, data)) = self
+                    //                         .printer_data
+                    //                         .iter()
+                    //                         .position(|(_, p, _)| *p == path)
+                    //                         .map(|index| self.printer_data.remove(index))
+                    //                     {
+                    //                         data_source = fs::DataSource::MemoryCursor(
+                    //                             std::io::Cursor::new(data),
+                    //                         );
+                    //                     } else {
+                    //                         // Ignore this message if the printer data is not found
+                    //                         return true;
+                    //                     }
+                    //                 }
+                    //             };
+                    //             match fs::TransferJob::new_read(
+                    //                 id,
+                    //                 r#type,
+                    //                 "".to_string(),
+                    //                 data_source,
+                    //                 s.file_num,
+                    //                 s.include_hidden,
+                    //                 false,
+                    //                 od,
+                    //             ) {
+                    //                 Err(err) => {
+                    //                     self.send(fs::new_error(id, err, 0)).await;
+                    //                 }
+                    //                 Ok(mut job) => {
+                    //                     self.send(fs::new_dir(id, path, job.files().to_vec()))
+                    //                         .await;
+                    //                     let files = job.files().to_owned();
+                    //                     job.is_remote = true;
+                    //                     job.conn_id = self.inner.id();
+                    //                     let job_type = job.r#type;
+                    //                     self.read_jobs.push(job);
+                    //                     self.file_timer =
+                    //                         crate::rustdesk_interval(time::interval(MILLI1));
+                    //                     self.post_file_audit(
+                    //                         FileAuditType::RemoteSend,
+                    //                         if job_type == fs::JobType::Printer {
+                    //                             "Remote print"
+                    //                         } else {
+                    //                             &s.path
+                    //                         },
+                    //                         Self::get_files_for_audit(job_type, files),
+                    //                         json!({}),
+                    //                     );
+                    //                 }
+                    //             }
+                    //             self.file_transferred = true;
+                    //         }
+                    //         Some(file_action::Union::Receive(r)) => {
+                    //             // client to server
+                    //             // note: 1.1.10 introduced identical file detection, which breaks original logic of send/recv files
+                    //             // whenever got send/recv request, check peer version to ensure old version of rustdesk
+                    //             let od = can_enable_overwrite_detection(get_version_number(
+                    //                 &self.lr.version,
+                    //             ));
+                    //             self.send_fs(ipc::FS::NewWrite {
+                    //                 path: r.path.clone(),
+                    //                 id: r.id,
+                    //                 file_num: r.file_num,
+                    //                 files: r
+                    //                     .files
+                    //                     .to_vec()
+                    //                     .drain(..)
+                    //                     .map(|f| (f.name, f.modified_time))
+                    //                     .collect(),
+                    //                 overwrite_detection: od,
+                    //                 total_size: r.total_size,
+                    //                 conn_id: self.inner.id(),
+                    //             });
+                    //             self.post_file_audit(
+                    //                 FileAuditType::RemoteReceive,
+                    //                 &r.path,
+                    //                 Self::get_files_for_audit(fs::JobType::Generic, r.files),
+                    //                 json!({}),
+                    //             );
+                    //             self.file_transferred = true;
+                    //         }
+                    //         Some(file_action::Union::RemoveDir(d)) => {
+                    //             self.send_fs(ipc::FS::RemoveDir {
+                    //                 path: d.path.clone(),
+                    //                 id: d.id,
+                    //                 recursive: d.recursive,
+                    //             });
+                    //             self.file_remove_log_control.on_remove_dir(d);
+                    //         }
+                    //         Some(file_action::Union::RemoveFile(f)) => {
+                    //             self.send_fs(ipc::FS::RemoveFile {
+                    //                 path: f.path.clone(),
+                    //                 id: f.id,
+                    //                 file_num: f.file_num,
+                    //             });
+                    //             self.file_remove_log_control.on_remove_file(f);
+                    //         }
+                    //         Some(file_action::Union::Create(c)) => {
+                    //             self.send_fs(ipc::FS::CreateDir {
+                    //                 path: c.path.clone(),
+                    //                 id: c.id,
+                    //             });
+                    //             self.send_to_cm(ipc::Data::FileTransferLog((
+                    //                 "create_dir".to_string(),
+                    //                 serde_json::to_string(&FileActionLog {
+                    //                     id: c.id,
+                    //                     conn_id: self.inner.id(),
+                    //                     path: c.path,
+                    //                     dir: true,
+                    //                 })
+                    //                 .unwrap_or_default(),
+                    //             )));
+                    //         }
+                    //         Some(file_action::Union::Cancel(c)) => {
+                    //             self.send_fs(ipc::FS::CancelWrite { id: c.id });
+                    //             if let Some(job) = fs::remove_job(c.id, &mut self.read_jobs) {
+                    //                 self.send_to_cm(ipc::Data::FileTransferLog((
+                    //                     "transfer".to_string(),
+                    //                     fs::serialize_transfer_job(&job, false, true, ""),
+                    //                 )));
+                    //             }
+                    //         }
+                    //         Some(file_action::Union::SendConfirm(r)) => {
+                    //             if let Some(job) = fs::get_job(r.id, &mut self.read_jobs) {
+                    //                 job.confirm(&r);
+                    //             }
+                    //         }
+                    //         Some(file_action::Union::Rename(r)) => {
+                    //             self.send_fs(ipc::FS::Rename {
+                    //                 id: r.id,
+                    //                 path: r.path.clone(),
+                    //                 new_name: r.new_name.clone(),
+                    //             });
+                    //             self.send_to_cm(ipc::Data::FileTransferLog((
+                    //                 "rename".to_string(),
+                    //                 serde_json::to_string(&FileRenameLog {
+                    //                     conn_id: self.inner.id(),
+                    //                     path: r.path,
+                    //                     new_name: r.new_name,
+                    //                 })
+                    //                 .unwrap_or_default(),
+                    //             )));
+                    //         }
+                    //         _ => {}
+                    //     }
+                    // }
                 }
                 Some(message::Union::FileResponse(fr)) => match fr.union {
-                    Some(file_response::Union::Block(block)) => {
-                        self.send_fs(ipc::FS::WriteBlock {
-                            id: block.id,
-                            file_num: block.file_num,
-                            data: block.data,
-                            compressed: block.compressed,
-                        });
-                    }
-                    Some(file_response::Union::Done(d)) => {
-                        self.send_fs(ipc::FS::WriteDone {
-                            id: d.id,
-                            file_num: d.file_num,
-                        });
-                    }
-                    Some(file_response::Union::Digest(d)) => self.send_fs(ipc::FS::CheckDigest {
-                        id: d.id,
-                        file_num: d.file_num,
-                        file_size: d.file_size,
-                        last_modified: d.last_modified,
-                        is_upload: true,
-                    }),
-                    Some(file_response::Union::Error(e)) => {
-                        self.send_fs(ipc::FS::WriteError {
-                            id: e.id,
-                            file_num: e.file_num,
-                            err: e.error,
-                        });
-                    }
+                    /**************** mzx change it ***********/
+                    // Some(file_response::Union::Block(block)) => {
+                    //     self.send_fs(ipc::FS::WriteBlock {
+                    //         id: block.id,
+                    //         file_num: block.file_num,
+                    //         data: block.data,
+                    //         compressed: block.compressed,
+                    //     });
+                    // }
+                    // Some(file_response::Union::Done(d)) => {
+                    //     self.send_fs(ipc::FS::WriteDone {
+                    //         id: d.id,
+                    //         file_num: d.file_num,
+                    //     });
+                    // }
+                    // Some(file_response::Union::Digest(d)) => self.send_fs(ipc::FS::CheckDigest {
+                    //     id: d.id,
+                    //     file_num: d.file_num,
+                    //     file_size: d.file_size,
+                    //     last_modified: d.last_modified,
+                    //     is_upload: true,
+                    // }),
+                    // Some(file_response::Union::Error(e)) => {
+                    //     self.send_fs(ipc::FS::WriteError {
+                    //         id: e.id,
+                    //         file_num: e.file_num,
+                    //         err: e.error,
+                    //     });
+                    // }
                     _ => {}
                 },
                 Some(message::Union::Misc(misc)) => match misc.union {
@@ -2829,11 +2865,13 @@ impl Connection {
                                 return false;
                             }
                             if self.file_transfer.is_some() {
-                                if let Some((dir, show_hidden)) = self.delayed_read_dir.take() {
-                                    self.read_dir(&dir, show_hidden);
-                                }
+                                /**************** mzx change it ***********/
+                                // if let Some((dir, show_hidden)) = self.delayed_read_dir.take() {
+                                //     self.read_dir(&dir, show_hidden);
+                                // }
                             } else if self.view_camera {
-                                self.try_sub_camera_displays();
+                                /**************** mzx change it ***********/
+                                // self.try_sub_camera_displays();
                             } else if !self.terminal {
                                 self.try_sub_monitor_services();
                             }
@@ -3323,37 +3361,39 @@ impl Connection {
         }
         #[cfg(any(target_os = "windows", feature = "unix-file-copy-paste"))]
         if let Ok(q) = o.enable_file_transfer.enum_value() {
-            if q != BoolOption::NotSet {
-                self.enable_file_transfer = q == BoolOption::Yes;
-                #[cfg(target_os = "windows")]
-                self.send_to_cm(ipc::Data::ClipboardFileEnabled(
-                    self.file_transfer_enabled(),
-                ));
-                #[cfg(feature = "unix-file-copy-paste")]
-                if !self.enable_file_transfer {
-                    self.try_empty_file_clipboard();
-                }
-                #[cfg(feature = "unix-file-copy-paste")]
-                if let Some(s) = self.server.upgrade() {
-                    s.write().unwrap().subscribe(
-                        super::clipboard_service::FILE_NAME,
-                        self.inner.clone(),
-                        self.can_sub_file_clipboard_service(),
-                    );
-                }
-            }
+            /**************** mzx change it ***********/
+            // if q != BoolOption::NotSet {
+            //     self.enable_file_transfer = q == BoolOption::Yes;
+            //     #[cfg(target_os = "windows")]
+            //     self.send_to_cm(ipc::Data::ClipboardFileEnabled(
+            //         self.file_transfer_enabled(),
+            //     ));
+            //     #[cfg(feature = "unix-file-copy-paste")]
+            //     if !self.enable_file_transfer {
+            //         self.try_empty_file_clipboard();
+            //     }
+            //     #[cfg(feature = "unix-file-copy-paste")]
+            //     if let Some(s) = self.server.upgrade() {
+            //         s.write().unwrap().subscribe(
+            //             super::clipboard_service::FILE_NAME,
+            //             self.inner.clone(),
+            //             self.can_sub_file_clipboard_service(),
+            //         );
+            //     }
+            // }
         }
         if let Ok(q) = o.disable_clipboard.enum_value() {
-            if q != BoolOption::NotSet {
-                self.disable_clipboard = q == BoolOption::Yes;
-                if let Some(s) = self.server.upgrade() {
-                    s.write().unwrap().subscribe(
-                        super::clipboard_service::NAME,
-                        self.inner.clone(),
-                        self.can_sub_clipboard_service(),
-                    );
-                }
-            }
+            /**************** mzx change it ***********/
+            // if q != BoolOption::NotSet {
+            //     self.disable_clipboard = q == BoolOption::Yes;
+            //     if let Some(s) = self.server.upgrade() {
+            //         s.write().unwrap().subscribe(
+            //             super::clipboard_service::NAME,
+            //             self.inner.clone(),
+            //             self.can_sub_clipboard_service(),
+            //         );
+            //     }
+            // }
         }
         if let Ok(q) = o.disable_keyboard.enum_value() {
             if q != BoolOption::NotSet {
@@ -3591,19 +3631,21 @@ impl Connection {
     }
 
     fn read_empty_dirs(&mut self, dir: &str, include_hidden: bool) {
-        let dir = dir.to_string();
-        self.send_fs(ipc::FS::ReadEmptyDirs {
-            dir,
-            include_hidden,
-        });
+        /**************** mzx change it ***********/
+        // let dir = dir.to_string();
+        // self.send_fs(ipc::FS::ReadEmptyDirs {
+        //     dir,
+        //     include_hidden,
+        // });
     }
 
     fn read_dir(&mut self, dir: &str, include_hidden: bool) {
-        let dir = dir.to_string();
-        self.send_fs(ipc::FS::ReadDir {
-            dir,
-            include_hidden,
-        });
+        /**************** mzx change it ***********/
+        // let dir = dir.to_string();
+        // self.send_fs(ipc::FS::ReadDir {
+        //     dir,
+        //     include_hidden,
+        // });
     }
 
     #[inline]
@@ -3771,37 +3813,39 @@ impl Connection {
 
     #[cfg(feature = "unix-file-copy-paste")]
     async fn handle_file_clip(&mut self, clip: clipboard::ClipboardFile) {
-        let is_stopping_allowed = clip.is_stopping_allowed();
-        let is_keyboard_enabled = self.peer_keyboard_enabled();
-        let file_transfer_enabled = self.file_transfer_enabled();
-        let stop = is_stopping_allowed && !file_transfer_enabled;
-        log::debug!(
-            "Process clipboard message from clip, stop: {}, is_stopping_allowed: {}, file_transfer_enabled: {}",
-            stop, is_stopping_allowed, file_transfer_enabled);
-        if !stop {
-            use hbb_common::config::keys::OPTION_ONE_WAY_FILE_TRANSFER;
-            // Note: Code will not reach here if `crate::get_builtin_option(OPTION_ONE_WAY_FILE_TRANSFER) == "Y"` is true.
-            // Because `file-clipboard` service will not be subscribed.
-            // But we still check it here to keep the same logic to windows version in `ui_cm_interface.rs`.
-            if clip.is_beginning_message()
-                && crate::get_builtin_option(OPTION_ONE_WAY_FILE_TRANSFER) == "Y"
-            {
-                // If one way file transfer is enabled, don't send clipboard file to client
-            } else {
-                // Maybe we should end the connection, because copy&paste files causes everything to wait.
-                allow_err!(
-                    self.stream
-                        .send(&crate::clipboard_file::clip_2_msg(clip))
-                        .await
-                );
-            }
-        }
+        /**************** mzx change it ***********/
+        // let is_stopping_allowed = clip.is_stopping_allowed();
+        // let is_keyboard_enabled = self.peer_keyboard_enabled();
+        // let file_transfer_enabled = self.file_transfer_enabled();
+        // let stop = is_stopping_allowed && !file_transfer_enabled;
+        // log::debug!(
+        //     "Process clipboard message from clip, stop: {}, is_stopping_allowed: {}, file_transfer_enabled: {}",
+        //     stop, is_stopping_allowed, file_transfer_enabled);
+        // if !stop {
+        //     use hbb_common::config::keys::OPTION_ONE_WAY_FILE_TRANSFER;
+        //     // Note: Code will not reach here if `crate::get_builtin_option(OPTION_ONE_WAY_FILE_TRANSFER) == "Y"` is true.
+        //     // Because `file-clipboard` service will not be subscribed.
+        //     // But we still check it here to keep the same logic to windows version in `ui_cm_interface.rs`.
+        //     if clip.is_beginning_message()
+        //         && crate::get_builtin_option(OPTION_ONE_WAY_FILE_TRANSFER) == "Y"
+        //     {
+        //         // If one way file transfer is enabled, don't send clipboard file to client
+        //     } else {
+        //         // Maybe we should end the connection, because copy&paste files causes everything to wait.
+        //         allow_err!(
+        //             self.stream
+        //                 .send(&crate::clipboard_file::clip_2_msg(clip))
+        //                 .await
+        //         );
+        //     }
+        // }
     }
 
     #[inline]
     #[cfg(feature = "unix-file-copy-paste")]
     fn try_empty_file_clipboard(&mut self) {
-        try_empty_clipboard_files(ClipboardSide::Host, self.inner.id());
+        /**************** mzx change it ***********/
+        // try_empty_clipboard_files(ClipboardSide::Host, self.inner.id());
     }
 
     #[cfg(all(target_os = "windows", feature = "flutter"))]
