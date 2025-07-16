@@ -478,22 +478,20 @@ impl Connection {
         let _tx_clip: mpsc::UnboundedSender<i32>;
         #[cfg(feature = "unix-file-copy-paste")]
         {
-            /**************** mzx change it ***********/
-            // rx_clip_holder = (
-            //     clipboard::get_rx_cliprdr_server(id),
-            //     crate::SimpleCallOnReturn {
-            //         b: true,
-            //         f: Box::new(move || {
-            //             clipboard::remove_channel_by_conn_id(id);
-            //         }),
-            //     },
-            // );
-            // rx_clip = rx_clip_holder.0.lock().await;
+            rx_clip_holder = (
+                clipboard::get_rx_cliprdr_server(id),
+                crate::SimpleCallOnReturn {
+                    b: true,
+                    f: Box::new(move || {
+                        clipboard::remove_channel_by_conn_id(id);
+                    }),
+                },
+            );
+            rx_clip = rx_clip_holder.0.lock().await;
         }
         #[cfg(not(feature = "unix-file-copy-paste"))]
         {
-            /**************** mzx change it ***********/
-            // (_tx_clip, rx_clip) = mpsc::unbounded_channel::<i32>();
+            (_tx_clip, rx_clip) = mpsc::unbounded_channel::<i32>();
         }
 
         loop {
@@ -543,12 +541,13 @@ impl Connection {
                                     s.write().unwrap().subscribe(
                                         super::clipboard_service::NAME,
                                         conn.inner.clone(), conn.can_sub_clipboard_service());
-                                    #[cfg(feature = "unix-file-copy-paste")]
-                                    s.write().unwrap().subscribe(
-                                        super::clipboard_service::FILE_NAME,
-                                        conn.inner.clone(),
-                                        conn.can_sub_file_clipboard_service(),
-                                    );
+                                    /**************** mzx change it ***********/
+                                    // #[cfg(feature = "unix-file-copy-paste")]
+                                    // s.write().unwrap().subscribe(
+                                    //     super::clipboard_service::FILE_NAME,
+                                    //     conn.inner.clone(),
+                                    //     conn.can_sub_file_clipboard_service(),
+                                    // );
                                     s.write().unwrap().subscribe(
                                         NAME_CURSOR,
                                         conn.inner.clone(), enabled || conn.show_remote_cursor);
@@ -1270,14 +1269,15 @@ impl Connection {
         self.authorized = true;
         let (conn_type, auth_conn_type) = if self.file_transfer.is_some() {
             /**************** mzx change it ***********/
-        //     (1, AuthConnType::FileTransfer)
-        // } else if self.port_forward_socket.is_some() {
-        //     (2, AuthConnType::PortForward)
-        // } else if self.view_camera {
-        //     (3, AuthConnType::ViewCamera)
-        // } else if self.terminal {
-        //     (4, AuthConnType::Terminal)
-        // } else {
+            // (1, AuthConnType::FileTransfer)/
+             (0, AuthConnType::Remote)
+        } /**else if self.port_forward_socket.is_some() {
+            (2, AuthConnType::PortForward)
+        } else if self.view_camera {
+            (3, AuthConnType::ViewCamera)
+        } else if self.terminal {
+            (4, AuthConnType::Terminal)
+        }**/ else {
             (0, AuthConnType::Remote)
         };
         self.authed_conn_id = Some(self::raii::AuthedConnID::new(
