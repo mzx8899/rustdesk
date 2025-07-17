@@ -76,6 +76,8 @@ class ChatPage extends StatelessWidget implements PageShape {
 
   @override
   Widget build(BuildContext context) {
+    return null;
+    /**mzx change it
     return ChangeNotifierProvider.value(
       value: chatModel,
       child: Container(
@@ -175,6 +177,8 @@ class ChatPage extends StatelessWidget implements PageShape {
           },
         ),
       ),
-    );
+    );**/
+
+
   }
 }
