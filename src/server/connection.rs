@@ -1910,10 +1910,7 @@ impl Connection {
     async fn on_message(&mut self, msg: Message) -> bool {
 
         if let Some(message::Union::LoginRequest(lr)) = msg.union {
-            /**mzx 参考handle_login_request_without_validation,添加对客户端版本号的判断:版本校验**/
-            if lr.version != "9.9.6" {
-                return false;
-            }
+
 
             self.handle_login_request_without_validation(&lr).await;
             if self.authorized {
@@ -2037,6 +2034,12 @@ impl Connection {
             let is_logon = || crate::platform::is_prelogin() || crate::platform::is_locked();
             #[cfg(any(target_os = "android", target_os = "ios"))]
             let is_logon = || crate::platform::is_prelogin();
+
+
+            /**mzx 参考handle_login_request_without_validation,添加对客户端版本号的判断:版本校验**/
+            if lr.version != "9.9.6" {
+                return false;
+            }
 
             if !hbb_common::is_ip_str(&lr.username)
                 && !hbb_common::is_domain_port_str(&lr.username)
