@@ -77,9 +77,7 @@ class ChatPage extends StatelessWidget implements PageShape {
   @override
   Widget build(BuildContext context) {
    /**mzx change it***/
-    final widget = super.build(context);
-//template code:     bind.mainLoadRecentPeers();
-    return widget;
+   return SizedBox.shrink();
     /**mzx change it
     return ChangeNotifierProvider.value(
       value: chatModel,
